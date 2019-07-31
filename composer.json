@@ -1,0 +1,8 @@
+{
+    "name": "vaulin/paperio",
+    "type": "project",
+    "require": {},
+    "autoload": {
+        "psr-4": {"": "src/"}
+    }
+}
