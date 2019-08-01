@@ -3,6 +3,7 @@ use Game\Settings;
 use Game\Tick;
 
 require 'vendor/autoload.php';
+require 'helpers.php';
 
 function getServerMessage() {
     $line = trim(fgets(STDIN));

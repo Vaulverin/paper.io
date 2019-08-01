@@ -15,4 +15,16 @@ class Suicide extends AbstractEstimator
 
         return $weight;
     }
+
+    function isPositionInMap($position, $map)
+    {
+        foreach ($map as $mapPosition) {
+            if ($position[0] == $mapPosition[0] && $position[1] == $mapPosition[1]) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }

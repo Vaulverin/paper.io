@@ -13,7 +13,7 @@ class Settings
     {
         $this->xCount = $settings['x_cells_count'];
         $this->yCount = $settings['y_cells_count'];
-        $this->speed = $settings['speed'];
+        $this->speed = $settings['speed'] / 5;
         $this->width = $settings['width'];
     }
 
