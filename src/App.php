@@ -1,5 +1,8 @@
 <?php
 
+use Estimators\AbstractEstimator;
+use Estimators\Edge;
+use Estimators\Suicide;
 use Game\Player;
 use Game\Settings;
 use Game\Tick;
@@ -21,8 +24,18 @@ class App
     function getAction(Tick $tick)
     {
         $directions = $this->getAvailableDirections($tick->hero);
-        foreach ($directions as $direction => &$wight) {
-
+        $estimators = [
+            Edge::class,
+            Suicide::class,
+        ];
+        foreach ($directions as $direction => &$weight) {
+            foreach ($estimators as $estimator) {
+                if ($weight > 0) {
+                    /** @var AbstractEstimator $esInstance */
+                    $esInstance = new $estimator($this->settings, $tick);
+                    $weight = $esInstance->estimate($direction, $weight);
+                }
+            }
         }
         asort($directions);
         $keys = array_keys($directions);
@@ -34,7 +47,7 @@ class App
         return 'debug';
     }
 
-    function getAvailableDirections(Player $player)
+    protected function getAvailableDirections(Player $player)
     {
         $directions = AVAILABLE_DIRECTIONS[$player->direction];
         $result = [];
