@@ -1,26 +1,41 @@
 <?php
-
-
-namespace Estimators;
-
+namespace Helpers;
 
 use SplQueue;
 
-class WayOut extends AbstractEstimator
+class BreadthFirstSearch
 {
 
-    function estimate($direction, $weight)
-    {
-        $hero = $this->tick->hero;
-        $nextPosition = $this->getNextPosition($direction, $hero->position);
-        $startNode = $this->positionToString($nextPosition);
-        $endNodes = $this->mapToArrayOfStrings($hero->territory);
-        $graph = $this->makeGraph($hero->lines);
-        if (!$this->bfs($graph, $startNode, $endNodes)) {
-            return -1;
-        }
+    /**
+     * @var int
+     */
+    private $cellWidth;
+    /**
+     * @var int
+     */
+    private $cellsCount;
 
-        return $weight;
+    function __construct(int $cellWidth, int $cellsCount)
+    {
+        $this->cellWidth = $cellWidth;
+        $this->cellsCount = $cellsCount;
+    }
+
+    function isReachable(array $startPosition, array $destinationPositions, array $exceptPosition)
+    {
+        return $this->getShortestPath($startPosition, $destinationPositions, $exceptPosition) !== false;
+    }
+
+    function getShortestPath(array $startPosition, array $destinationPositions, array $exceptPosition)
+    {
+        list($startNode, $endNodes, $graph) = [
+            $this->positionToString($startPosition),
+            $this->mapToArrayOfStrings($destinationPositions),
+            $this->makeGraph($exceptPosition),
+        ];
+        $graph = $this->bfs_path($graph, $startNode, $endNodes);
+
+        return $this->stringsToPositions($graph);
     }
 
     /*
@@ -35,26 +50,34 @@ class WayOut extends AbstractEstimator
  *        add them to the queue and mark them visited.
  *  3. If we haven't found our node, return false.
  *
- * @returns bool
+ * Same as bfs() except instead of returning a bool, it returns a path.
+ *
+ * Implemented by enqueuing a path, instead of a node, for each neighbour.
+ *
+ * @returns array or false
  */
-    protected function bfs($graph, $start, $end)
-    {
+    protected function bfs_path($graph, $start, $end) {
         $queue = new SplQueue();
-        $queue->enqueue($start);
+        # Enqueue the path
+        $queue->enqueue([$start]);
         $visited = [$start];
         while ($queue->count() > 0) {
-            $node = $queue->dequeue();
-            # We've found what we want
+            $path = $queue->dequeue();
+            # Get the last node on the path
+            # so we can check if we're at the end
+            $node = $path[sizeof($path) - 1];
+
             if (in_array($node, $end)) {
-                return true;
+                return $path;
             }
             if (isset($graph[$node])) {
                 foreach ($graph[$node] as $neighbour) {
                     if (!in_array($neighbour, $visited)) {
-                        # Mark neighbour visited
                         $visited[] = $neighbour;
-                        # Enqueue node
-                        $queue->enqueue($neighbour);
+                        # Build new path appending the neighbour then and enqueue it
+                        $new_path = $path;
+                        $new_path[] = $neighbour;
+                        $queue->enqueue($new_path);
                     }
                 }
             }
@@ -66,9 +89,9 @@ class WayOut extends AbstractEstimator
     {
         $strException = $this->mapToArrayOfStrings($exception);
         $graph = [];
-        $step = $this->settings->width;
-        $start = $this->settings->width / 2;
-        $end = $this->settings->xCount * $this->settings->width - $start;
+        $step = $this->cellWidth;
+        $start = $this->cellWidth / 2;
+        $end = $this->cellsCount * $this->cellWidth - $start;
         for($x = $start; $x <= $end; $x += $step) {
             for($y = $start; $y <= $end; $y += $step) {
                 $node = $this->positionToString([$x, $y]);
@@ -89,8 +112,6 @@ class WayOut extends AbstractEstimator
                     $strNeighbor = $this->positionToString($neighbor);
                     if ($isExist && !in_array($strNeighbor, $strException)) {
                         $graph[$node][] = $strNeighbor;
-                    } else {
-                        $a = 1;
                     }
                 }
             }
@@ -101,7 +122,7 @@ class WayOut extends AbstractEstimator
 
     protected function positionToString($position)
     {
-        return sprintf('[%1$s, %2$s]', $position[0], $position[1]);
+        return sprintf('[%1$s,%2$s]', $position[0], $position[1]);
     }
 
     protected function mapToArrayOfStrings($map)
@@ -114,5 +135,16 @@ class WayOut extends AbstractEstimator
         return $result;
     }
 
+    protected function stringsToPositions($graph)
+    {
+        if($graph === false) {
+            return $graph;
+        }
+        $result = [];
+        foreach ($graph as $strPosition) {
+            $result[] = explode(',', trim($strPosition, '[]'));
+        }
 
+        return $result;
+    }
 }

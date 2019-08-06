@@ -6,6 +6,7 @@ namespace Game;
  * @property int yCount
  * @property int speed
  * @property int width
+ * @property int maxTickCount
  */
 class Settings
 {
@@ -15,6 +16,7 @@ class Settings
         $this->yCount = $settings['y_cells_count'];
         $this->speed = $settings['speed'] / 5;
         $this->width = $settings['width'];
+        $this->maxTickCount = 1490;
     }
 
 }

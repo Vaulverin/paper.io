@@ -23,6 +23,7 @@ const AVAILABLE_DIRECTIONS = [
  * @property array position [x,y]
  * @property array territory
  * @property int score
+ * @property int speed
  */
 class Player
 {
@@ -37,6 +38,7 @@ class Player
         foreach ($params['bonuses'] as $bonus) {
             $this->bonuses[] = new Bonus($bonus);
         }
+        $this->speed = 1;
     }
 
 }

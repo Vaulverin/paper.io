@@ -1,8 +1,12 @@
 <?php
 namespace Estimators;
 
-
-class Edge extends AbstractEstimator
+/**
+ * Фильтруем действия, которые приведут к выходу за границы карты.
+ * Class Edge
+ * @package Estimators
+ */
+class OutPossibilityEstimator extends AbstractEstimator
 {
 
     function estimate($direction, $weight)

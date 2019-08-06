@@ -1,9 +1,12 @@
 <?php
 
 use Estimators\AbstractEstimator;
-use Estimators\Edge;
-use Estimators\Suicide;
-use Estimators\WayOut;
+use Estimators\OutPossibilityEstimator;
+use Estimators\SuicidePossibilityEstimator;
+use Estimators\GreedyWayEstimator;
+use Estimators\TimeOutEstimator;
+use Estimators\EnemyDangerEstimator;
+use Estimators\WayOutEstimator;
 use Game\Player;
 use Game\Settings;
 use Game\Tick;
@@ -26,9 +29,12 @@ class App
     {
         $directions = $this->getAvailableDirections($tick->hero);
         $estimators = [
-            Edge::class,
-            Suicide::class,
-            WayOut::class,
+            OutPossibilityEstimator::class,
+            SuicidePossibilityEstimator::class,
+            WayOutEstimator::class,
+            TimeOutEstimator::class,
+            GreedyWayEstimator::class,
+            EnemyDangerEstimator::class,
         ];
         foreach ($directions as $direction => &$weight) {
             foreach ($estimators as $estimator) {
