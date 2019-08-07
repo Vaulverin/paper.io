@@ -31,10 +31,8 @@ class EnemyDangerEstimator extends AbstractEstimator
                     if ($distance >= $enemyDistance) {
                         $firstMove = $path[1];
                         if ($firstMove[0] == $nextPosition[0] && $firstMove[1] == $nextPosition[1]) {
-                            return $weight;
+                            return $weight + 10000000;
                         }
-
-                        return -1;
                     }
                 }
             }

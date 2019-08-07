@@ -17,6 +17,11 @@ class BFSCached extends BreadthFirstSearch
         $this->bfs = $bfs;
     }
 
+    public static function clearCache()
+    {
+        static::$results = [];
+    }
+
     function getShortestPath(array $startPosition, array $destinationPositions, array $exceptPosition)
     {
         $key = sha1(serialize([$startPosition, $destinationPositions, $exceptPosition]));

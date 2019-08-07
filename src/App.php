@@ -10,6 +10,7 @@ use Estimators\WayOutEstimator;
 use Game\Player;
 use Game\Settings;
 use Game\Tick;
+use Helpers\BFSCached;
 use const Game\AVAILABLE_DIRECTIONS;
 
 class App
@@ -45,6 +46,7 @@ class App
                 }
             }
         }
+        BFSCached::clearCache();
         asort($directions);
         $keys = array_keys($directions);
         return array_pop($keys);
